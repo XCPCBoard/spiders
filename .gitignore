@@ -13,3 +13,16 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+
+.idea
+
+#Database
+config/docker/mysql/datadir
+config/docker/mysql/mydir
+config/docker/mysql/source
+
+*.yaml
+
+#log
+log/
