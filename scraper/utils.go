@@ -38,3 +38,7 @@ func NewBaseCollector() *colly.Collector {
 		colly.AllowURLRevisit(),
 	)
 }
+
+func ParseUidFromContext(ctx *colly.Context) string {
+	return ctx.Get("uid")
+}

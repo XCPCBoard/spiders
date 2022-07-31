@@ -1,12 +1,14 @@
 package nowcoder
 
 import (
-	"XCPCBoard/spiders/model"
-	"XCPCBoard/spiders/scraper"
 	"fmt"
-	"github.com/gocolly/colly"
-	log "github.com/sirupsen/logrus"
 	"strconv"
+
+	"github.com/gocolly/colly"
+
+	"XCPCBoard/spiders/model"
+	"XCPCBoard/utils/keys"
+	log "github.com/sirupsen/logrus"
 )
 
 // @Author: Feng
@@ -17,13 +19,6 @@ import (
 //-------------------------------------------------------------------------------------------//
 
 const kScraperName = ""
-
-var (
-	mainScraper = scraper.InitializeAndRegisterScraper(
-		kScraperName,
-		enrichMainPageCollector,
-	)
-)
 
 //enrichMainPageCollector 处理牛客个人主页的回调函数
 func enrichMainPageCollector(c *colly.Collector) {
@@ -41,21 +36,21 @@ func enrichMainPageCollector(c *colly.Collector) {
 			if err != nil {
 				log.Errorf("str atoi Error %v", err)
 			} else {
-				e.Request.Ctx.Put(GetRatingKey(uid), num)
+				e.Request.Ctx.Put(keys.NowcoderRatingKey(uid), num)
 			}
 			// 排名
 			num, err = strconv.Atoi(e.DOM.Find(getNowCoderContestBaseFindRule(ratingRankingKeyWord)).First().Text())
 			if err != nil {
 				log.Errorf("str atoi Error %v", err)
 			} else {
-				e.Request.Ctx.Put(GetRankingKey(uid), num)
+				e.Request.Ctx.Put(keys.NowcoderRankingKey(uid), num)
 			}
 			// 过题数
 			num, err = strconv.Atoi(e.DOM.Find(getNowCoderContestBaseFindRule(contestAmountKeyWord)).First().Text())
 			if err != nil {
 				log.Errorf("str atoi Error %v", err)
 			} else {
-				e.Request.Ctx.Put(utils.GetContestAmountKey(uid), num)
+				e.Request.Ctx.Put(keys.NowcoderContestAmountKey(uid), num)
 			}
 		},
 	)
@@ -67,19 +62,14 @@ func enrichMainPageCollector(c *colly.Collector) {
 //-------------------------------------------------------------------------------------------//
 
 //fetchMainPage 抓取个人主页页面所有
-func fetchMainPage(uid string) ([]scraper.KV, error) {
+func (n *NowCoder) fetchMainPage(ctx *colly.Context) error {
 	// 构造上下文，及传入参数
-	ctx := colly.NewContext()
-	ctx.Put("uid", uid)
+	uid := ctx.Get("uid")
 	// 请求
-	err := mainScraper.Collector.Request("GET", getContestProfileUrl(uid), nil, ctx, nil)
+	err := n.mainPage.Request("GET", getContestProfileUrl(uid), nil, ctx, nil)
 	if err != nil {
 		log.Errorf("scraper error %v", err)
-		return nil, err
+		return err
 	}
-	// 解构出kv对
-	kvs := scraper.Parse(ctx, map[string]struct{}{
-		"uid": {},
-	})
-	return kvs, nil
+	return nil
 }

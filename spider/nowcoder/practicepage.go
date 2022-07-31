@@ -1,10 +1,13 @@
 package nowcoder
 
 import (
-	"XCPCBoard/spiders/model"
+	"strconv"
+
 	"github.com/gocolly/colly"
 	log "github.com/sirupsen/logrus"
-	"strconv"
+
+	"XCPCBoard/spiders/model"
+	"XCPCBoard/utils/keys"
 )
 
 // @Author: Feng
@@ -29,7 +32,7 @@ func enrichPracticePageCollector(c *colly.Collector) {
 			if err != nil {
 				log.Errorf("str atoi Error %v", err)
 			} else {
-				e.Request.Ctx.Put(GetPassAmountKey(uid), num)
+				e.Request.Ctx.Put(keys.NowcoderPassAmountKey(uid), num)
 			}
 		},
 	)

@@ -22,5 +22,4 @@ func internalFlushRedis(kvs ...KV) {
 			log.Errorf("internal flush redis error %v", err)
 		}
 	}
-
 }

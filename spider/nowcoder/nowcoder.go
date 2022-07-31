@@ -1,19 +1,25 @@
 package nowcoder
 
 import (
-	"XCPCBoard/spiders/scraper"
 	"github.com/gocolly/colly"
 	log "github.com/sirupsen/logrus"
+
+	"XCPCBoard/spiders/scraper"
+	"XCPCBoard/utils/keys"
 )
 
 // @Author: Feng
 // @Date: 2022/4/8 17:09
 
+func init() {
+	scraper.GetStrategyInstance().Register(keys.NowcoderKey, &NowCoder{})
+}
+
 var (
 	// 爬取函数
-	fetchers = []func(uid string) ([]scraper.KV, error){
-		fetchMainPage,
-		fetchPractice,
+	fetchers = []func(NowCoder, *colly.Context) error{
+		NowCoder.fetchMainPage,
+		NowCoder.fetchPractice,
 	}
 )
 
@@ -29,28 +35,14 @@ func (n *NowCoder) Init() {
 	enrichPracticePageCollector(n.practicePage)
 }
 
-//scrape 拉取牛客的所有结果
-func scrape(uid string) (res []scraper.KV) {
+//Scrape 拉取牛客的所有结果
+func (n *NowCoder) Scrape(ctx *colly.Context) {
 	// 请求所有
 	for _, f := range fetchers {
 		// 请求
-		kvs, err := f(uid)
+		err := f(*n, ctx)
 		if err != nil {
 			log.Errorf("GetPersistHandler Fetcher Error %v", err)
-			continue
 		}
-		res = append(res, kvs...)
 	}
-	return res
-}
-
-//Flush 刷新某用户牛客id信息
-func Flush(uid string) {
-	// 拉出所有kv对
-	kvs := scrape(uid)
-	// 向持久化处理协程注册持久化处理函数
-	scraper.CustomFlush(func() error {
-		log.Infoln(kvs)
-		return nil
-	})
 }

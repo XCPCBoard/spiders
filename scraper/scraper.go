@@ -26,13 +26,5 @@ func (f Strategy) Register(name string, scraper Scraper) {
 //Scraper colly封装
 type Scraper interface {
 	Init()
-	ScrapeAndFlush()
-}
-
-//InitializeAndRegisterScraper 初始化并构造Scraper
-func InitializeAndRegisterScraper(name string, cb func(*colly.Collector)) {
-	// 初始化scraper
-	s := InitialScraper(name, cb)
-	// 注册scraper
-	GetStrategyInstance().Register(name, s)
+	Scrape(ctx *colly.Context)
 }
