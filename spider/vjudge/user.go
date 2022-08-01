@@ -15,7 +15,7 @@ import (
 // 获取int形式的信息 //
 //---------------------------------------------------------------------//
 
-func intCallback(c *colly.Collector) {
+func vJudgeCallback(c *colly.Collector) {
 	c.OnHTML("body", func(e *colly.HTMLElement) {
 		uid := e.Request.Ctx.Get("uid")
 		if uid == "" {
@@ -53,4 +53,8 @@ func intCallback(c *colly.Collector) {
 			e.Request.Ctx.Put(keys.VJudgePassAmountKey(uid), num)
 		}
 	})
+}
+
+func getPersonPage(uid string) string {
+	return "https://vjudge.net/user/" + uid
 }

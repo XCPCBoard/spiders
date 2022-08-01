@@ -62,7 +62,7 @@ func enrichMainPageCollector(c *colly.Collector) {
 //-------------------------------------------------------------------------------------------//
 
 //fetchMainPage 抓取个人主页页面所有
-func (n *NowCoder) fetchMainPage(ctx *colly.Context) error {
+func (n *nowCoder) fetchMainPage(ctx *colly.Context) error {
 	// 构造上下文，及传入参数
 	uid := ctx.Get("uid")
 	// 请求

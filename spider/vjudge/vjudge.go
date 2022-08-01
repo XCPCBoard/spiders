@@ -2,16 +2,24 @@ package vjudge
 
 import (
 	"XCPCBoard/spiders/scraper"
+	"github.com/gocolly/colly"
 )
 
-//ScrapeUser 获得所有结果
-func ScrapeUser(uid string) (map[string]int, error) {
-	// 请求所有并合并所有
-	res, err := scraper.MergeAllResults[string, int](
-		GetUserMsg(uid),
-	)
+type vJudge struct {
+	collector *colly.Collector
+}
+
+func (v *vJudge) Init() {
+	v.collector = scraper.NewBaseCollector()
+	vJudgeCallback(v.collector)
+}
+
+func (v *vJudge) Scrape(ctx *colly.Context) {
+	// 构造上下文，及传入参数
+	uid := ctx.Get("uid")
+	// 请求
+	err := v.collector.Request("GET", getPersonPage(uid), nil, ctx, nil)
 	if err != nil {
-		return nil, err
+		log.Errorf("scraper error %v", err)
 	}
-	return res, nil
 }

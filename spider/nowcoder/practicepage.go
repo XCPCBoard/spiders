@@ -43,7 +43,7 @@ func enrichPracticePageCollector(c *colly.Collector) {
 //---------------------------------------------------------------------//
 
 //fetchPractice 抓取个人练习页面的所有
-func (n *NowCoder) fetchPractice(ctx *colly.Context) error {
+func (n *nowCoder) fetchPractice(ctx *colly.Context) error {
 	// 从上下文拉取uid
 	uid := ctx.Get("uid")
 	// 请求

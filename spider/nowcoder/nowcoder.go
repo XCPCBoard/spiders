@@ -12,23 +12,23 @@ import (
 // @Date: 2022/4/8 17:09
 
 func init() {
-	scraper.GetStrategyInstance().Register(keys.NowcoderKey, &NowCoder{})
+	scraper.GetStrategyInstance().Register(keys.NowcoderKey, &nowCoder{})
 }
 
 var (
 	// 爬取函数
-	fetchers = []func(NowCoder, *colly.Context) error{
-		NowCoder.fetchMainPage,
-		NowCoder.fetchPractice,
+	fetchers = []func(nowCoder, *colly.Context) error{
+		nowCoder.fetchMainPage,
+		nowCoder.fetchPractice,
 	}
 )
 
-type NowCoder struct {
+type nowCoder struct {
 	mainPage     *colly.Collector
 	practicePage *colly.Collector
 }
 
-func (n *NowCoder) Init() {
+func (n *nowCoder) Init() {
 	n.mainPage = scraper.NewBaseCollector()
 	enrichMainPageCollector(n.mainPage)
 	n.practicePage = scraper.NewBaseCollector()
@@ -36,7 +36,7 @@ func (n *NowCoder) Init() {
 }
 
 //Scrape 拉取牛客的所有结果
-func (n *NowCoder) Scrape(ctx *colly.Context) {
+func (n *nowCoder) Scrape(ctx *colly.Context) {
 	// 请求所有
 	for _, f := range fetchers {
 		// 请求
