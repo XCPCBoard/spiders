@@ -1,40 +1,45 @@
 package codeforces
 
 import (
-	"XCPCBoard/spiders/scraper"
+	"github.com/gocolly/colly"
 	log "github.com/sirupsen/logrus"
+
+	"XCPCBoard/spiders/scraper"
+	"XCPCBoard/utils/keys"
 )
+
+func init() {
+	scraper.GetStrategyInstance().Register(keys.CodeforcesKey, &codeforces{})
+}
 
 var (
 	// 爬取函数
-	fetchers = []func(uid string) ([]scraper.KV, error){
-		fetchUserInfo,
-		fetchAcceptInfo,
+	fetchers = []func(codeforces, *colly.Context) error{
+		codeforces.fetchUserInfo,
+		codeforces.fetchAcceptInfo,
 	}
 )
 
-//scrape 拉取牛客的所有结果
-func scrape(uid string) (res []scraper.KV) {
+type codeforces struct {
+	problemCollector *colly.Collector
+	infoCollector    *colly.Collector
+}
+
+func (c *codeforces) Init() {
+	c.problemCollector = scraper.NewBaseCollector()
+	problemCallback(c.problemCollector)
+	c.infoCollector = scraper.NewBaseCollector()
+	userInfoCallback(c.infoCollector)
+}
+
+//Scrape 拉取牛客的所有结果
+func (c *codeforces) Scrape(ctx *colly.Context) {
 	// 请求所有
 	for _, f := range fetchers {
 		// 请求
-		kvs, err := f(uid)
+		err := f(*c, ctx)
 		if err != nil {
 			log.Errorf("do Fetcher Error %v", err)
-			continue
 		}
-		res = append(res, kvs...)
 	}
-	return res
-}
-
-//Flush 刷新某用户牛客id信息
-func Flush(uid string) {
-	// 拉出所有kv对
-	kvs := scrape(uid)
-	// 向持久化处理协程注册持久化处理函数
-	scraper.CustomFlush(func() error {
-		log.Infoln(kvs)
-		return nil
-	})
 }

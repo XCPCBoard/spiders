@@ -1,21 +1,17 @@
 package codeforces
 
 import (
-	"XCPCBoard/spiders/model"
-	"XCPCBoard/spiders/scraper"
 	"encoding/json"
+
 	"github.com/gocolly/colly"
 	log "github.com/sirupsen/logrus"
+
+	"XCPCBoard/spiders/model"
+	"XCPCBoard/utils/keys"
 )
 
 // @Author: Feng
 // @Date: 2022/5/12 22:41
-
-var (
-	infoScraper = scraper.NewScraper(
-		userInfoCallback,
-	)
-)
 
 //userInfoCallback 处理codeforces的api
 func userInfoCallback(c *colly.Collector) {
@@ -39,16 +35,16 @@ func userInfoCallback(c *colly.Collector) {
 		}
 		info := rsp.GetResult()[0]
 		if info.GetRating() != 0 {
-			r.Ctx.Put(GetRatingKey(uid), info.GetRating())
+			r.Ctx.Put(keys.CodeforcesRatingKey(uid), info.GetRating())
 		}
 		if info.GetMaxRating() != 0 {
-			r.Ctx.Put(GetMaxRatingKey(uid), info.GetMaxRating())
+			r.Ctx.Put(keys.CodeforcesMaxRatingKey(uid), info.GetMaxRating())
 		}
 		if info.GetRank() != "" {
-			r.Ctx.Put(GetRankingNameKey(uid), info.GetRank())
+			r.Ctx.Put(keys.CodeforcesRankingKey(uid), info.GetRank())
 		}
 		if info.GetMaxRank() != "" {
-			r.Ctx.Put(GetMaxRankingNameKey(uid), info.GetMaxRank())
+			r.Ctx.Put(keys.CodeforcesMaxRankingKey(uid), info.GetMaxRank())
 		}
 	})
 }
@@ -58,19 +54,14 @@ func userInfoCallback(c *colly.Collector) {
 //---------------------------------------------------------------------//
 
 //fetchUserInfo 抓取用户信息
-func fetchUserInfo(uid string) ([]scraper.KV, error) {
+func (c *codeforces) fetchUserInfo(ctx *colly.Context) error {
 	// 构造上下文，及传入参数
-	ctx := colly.NewContext()
-	ctx.Put("uid", uid)
+	uid := ctx.Get("uid")
 	// 请求
-	err := infoScraper.C.Request("GET", getUserInfoUrl(uid), nil, ctx, nil)
+	err := c.infoCollector.Request("GET", getUserInfoUrl(uid), nil, ctx, nil)
 	if err != nil {
 		log.Errorf("scraper error %v", err)
-		return nil, err
+		return err
 	}
-	// 解构出kv对
-	kvs := scraper.Parse(ctx, map[string]struct{}{
-		"uid": {},
-	})
-	return kvs, nil
+	return nil
 }

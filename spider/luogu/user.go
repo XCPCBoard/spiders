@@ -16,19 +16,10 @@ import (
 var (
 	intScraper *scraper.Scraper[int]
 	jsonData   UserShow
-	difficulty [5]int
 )
 
-func init() {
-	intScraper = scraper.NewScraper[int](
-		scraper.WithCallback(intCallback),
-		scraper.WithThreads[int](2),
-	)
-}
-
-func intCallback(c *colly.Collector, res *scraper.Results[int]) {
+func intCallback(c *colly.Collector) {
 	c.OnHTML("head", func(e *colly.HTMLElement) {
-
 		//decoder
 		text, _ := url.QueryUnescape(e.DOM.Text())
 
@@ -38,17 +29,15 @@ func intCallback(c *colly.Collector, res *scraper.Results[int]) {
 		if err != nil {
 			log.Println("json Unmarshal error: ", err)
 		}
-		if jsonData.Code != 200 {
+		if jsonData.GetCode() != 200 {
 			log.Println("http Response is not 200: ", err)
 		}
 
 		//count problem difficulty
 		user := jsonData.GetCurrentData().GetUser()
 		problem := jsonData.GetCurrentData().GetPassedProblems()
+		difficulty := make([]int, 5)
 
-		for i := 0; i < 5; i++ {
-			difficulty[i] = 0
-		}
 		for _, i := range problem {
 			q := i.GetDifficulty()
 			if q == 0 || q > 7 { //未知题

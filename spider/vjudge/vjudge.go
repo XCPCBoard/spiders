@@ -1,8 +1,10 @@
 package vjudge
 
 import (
-	"XCPCBoard/spiders/scraper"
 	"github.com/gocolly/colly"
+	log "github.com/sirupsen/logrus"
+
+	"XCPCBoard/spiders/scraper"
 )
 
 type vJudge struct {
