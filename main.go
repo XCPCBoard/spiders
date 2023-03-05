@@ -6,6 +6,7 @@ import (
 	_ "XCPCer_board/dao"
 	"XCPCer_board/spider/codeforces"
 	"XCPCer_board/spider/nowcoder"
+	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
 	//"XCPCer_board/spider/nowcoder"
 	_ "github.com/FengZhg/go_tools/gin_logrus"
@@ -13,6 +14,7 @@ import (
 
 // 主入口函数
 func main() {
+
 	c := cron.New()
 	c.AddFunc("@every 24s", func() {
 		log.Infoln("okk")
