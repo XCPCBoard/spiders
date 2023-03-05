@@ -1,6 +1,7 @@
 package nowcoder
 
 import (
+	"XCPCer_board/dao"
 	"XCPCer_board/scraper"
 	log "github.com/sirupsen/logrus"
 )
@@ -35,9 +36,35 @@ func scrape(uid string) (res []scraper.KV) {
 func Flush(uid string) {
 	// 拉出所有kv对
 	kvs := scrape(uid)
-	// 向持久化处理协程注册持久化处理函数
+	name_id := 0
+	if kvs == nil {
+		log.Errorf("kv nil")
+		return
+	}
+	res, err := dao.DBClient.Query("select (name_id)from id_platform where uid = ?&& platform=?", uid, "nowcoder")
+	if err != nil {
+		log.Errorf("sql error %v", err)
+	} else {
+		for res.Next() {
+			res.Scan(&name_id)
+		}
+		if name_id == 0 {
+			log.Errorf("null name_id ,cant find name_id")
+		}
+	}
+	for _, j := range kvs {
+		if j.Key == "nowcoder_pass_amount_"+uid {
+			scraper.FlushDB("update  score set nowcoder = ? where id = ?;", j.Val, name_id)
+		}
+		if j.Key == "nowcoder_ranking_"+uid {
+			scraper.FlushDB("update score set now_rank = ? where id = ?;", j.Val, name_id)
+		}
+	}
+
+	scraper.FlushRedis(kvs)
 	scraper.CustomFlush(func() error {
 		log.Infoln(kvs)
+		//scraper.FlushRedis(kvs)
 		return nil
 	})
 }

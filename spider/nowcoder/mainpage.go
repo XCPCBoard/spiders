@@ -33,10 +33,12 @@ func mainCallback(c *colly.Collector) {
 				return
 			}
 			// rating
+
 			num, err := strconv.Atoi(e.DOM.Find(fmt.Sprintf(".my-state-item:contains(%v) .state-num.rate-score5",
 				ratingKeyWord)).First().Text())
+
 			if err != nil {
-				log.Errorf("str atoi Error %v", err)
+				log.Infoln("str atoi Error %v", err)
 			} else {
 				e.Request.Ctx.Put(GetRatingKey(uid), num)
 			}
