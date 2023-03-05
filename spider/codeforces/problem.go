@@ -13,27 +13,35 @@ var (
 	problemScraper = scraper.NewScraper(
 		problemCallback,
 	)
+	uuid = ""
 )
 
 func problemCallback(c *colly.Collector) {
 	c.OnHTML("div[style=\"position: relative;\"] #pageContent ._UserActivityFrame_frame "+
 		".roundbox.userActivityRoundBox ._UserActivityFrame_footer ._UserActivityFrame_countersRow",
 		func(e *colly.HTMLElement) {
+			tmp := strings.Split(e.DOM.Find(fmt.Sprintf("._UserActivityFrame_counter:contains(solved):contains("+
+				"%v) ._UserActivityFrame_counterValue", lastMonthPassKeyWord)).First().Text(), " ")[0]
 			// 最近一个月过题数
-			num, err := strconv.Atoi(strings.Split(e.DOM.Find(fmt.Sprintf("._UserActivityFrame_counter:contains(solved):contains("+
-				"%v) ._UserActivityFrame_counterValue", lastMonthPassKeyWord)).First().Text(), " ")[0])
+			num, err := strconv.Atoi(tmp)
 			if err != nil {
-				log.Errorf("str atoi Error %v", err)
+				if tmp != "" {
+					log.Errorf("str atoi Error %v", err)
+				}
 			} else {
-				e.Request.Ctx.Put(lastMonthPassAmount, num)
+				e.Request.Ctx.Put(lastMonthPassAmount+"_"+uuid, num)
 			}
+
 			// 总过题数
-			num, err = strconv.Atoi(strings.Split(e.DOM.Find(fmt.Sprintf("._UserActivityFrame_counter:contains(solved):contains("+
-				"%v) ._UserActivityFrame_counterValue", problemPassKeyWord)).First().Text(), " ")[0])
+			tmp = strings.Split(e.DOM.Find(fmt.Sprintf("._UserActivityFrame_counter:contains(solved):contains("+
+				"%v) ._UserActivityFrame_counterValue", problemPassKeyWord)).First().Text(), " ")[0]
+			num, err = strconv.Atoi(tmp)
 			if err != nil {
-				log.Errorf("str atoi Error %v", err)
+				if tmp != "" {
+					log.Errorf("str atoi Error %v", err)
+				}
 			} else {
-				e.Request.Ctx.Put(problemPassAmountKey, num)
+				e.Request.Ctx.Put(problemPassAmountKey+"_"+uuid, num)
 			}
 		},
 	)

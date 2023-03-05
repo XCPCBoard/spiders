@@ -1,6 +1,7 @@
 package codeforces
 
 import (
+	"XCPCer_board/dao"
 	"XCPCer_board/scraper"
 	log "github.com/sirupsen/logrus"
 )
@@ -28,13 +29,41 @@ func scrape(uid string) (res []scraper.KV) {
 	return res
 }
 
-//Flush 刷新某用户牛客id信息
+//Flush 刷新某用户cf-id信息
 func Flush(uid string) {
+	uuid = uid
 	// 拉出所有kv对
 	kvs := scrape(uid)
+	name_id := 0
+	if kvs == nil {
+		log.Errorf("kv nil")
+		return
+	}
+	res, err := dao.DBClient.Query("select (name_id)from id_platform where uid = ?&&platform=?", uid, "codeforces")
+	if err != nil {
+		log.Errorf("sql error %v", err)
+	} else {
+		for res.Next() {
+			res.Scan(&name_id)
+		}
+		if name_id == 0 {
+			log.Errorf("null name_id ,cant find name_id")
+		}
+	}
+	for _, j := range kvs {
+		if j.Key == "codeforces_problem_pass_"+uid {
+			scraper.FlushDB("update  score set cf_problem = ? where id = ?;", j.Val, name_id)
+		}
+		if j.Key == "codeforces_max_rating_"+uid {
+			scraper.FlushDB("update score set cf_rank = ? where id = ?;", j.Val, name_id)
+		}
+	}
+
+	scraper.FlushRedis(kvs)
 	// 向持久化处理协程注册持久化处理函数
 	scraper.CustomFlush(func() error {
 		log.Infoln(kvs)
+		//scraper.FlushRedis(kvs)
 		return nil
 	})
 }
