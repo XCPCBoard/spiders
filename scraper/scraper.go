@@ -7,29 +7,31 @@ import (
 // @Author: Feng
 // @Date: 2022/4/8 17:38
 
-//Scraper colly封装
+// Scraper colly封装
 type Scraper struct {
 	C       *colly.Collector //
 	threads uint32           // 启动的持久化协程数量和processor数量
 }
 
-//参数丰富接口
+// 参数丰富接口
 type scraperFunc func(*Scraper)
 
-//WithThreads 带上协程个数
+// WithThreads 带上协程个数
 func WithThreads(threads uint32) scraperFunc {
 	return func(s *Scraper) {
 		s.threads = threads
 	}
 }
 
-//NewScraper 构造Scraper
+// NewScraper 构造Scraper
 func NewScraper(cb func(*colly.Collector), opts ...scraperFunc) *Scraper {
 	// 默认参数
 	s := &Scraper{
+		//参数配置：
 		C: colly.NewCollector(
 			colly.Async(false),
 			colly.AllowURLRevisit(),
+			colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"),
 		),
 		threads: 5,
 	}

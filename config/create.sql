@@ -1,29 +1,27 @@
-create xcpc_board;
-create table id_platform
+CREATE
+DATABASE IF NOT EXISTS xcpc_board_mysql;
+use
+xcpc_board_mysql;
+
+drop table if exists id_platform;
+CREATE TABLE `id_platform`
 (
-    id       int auto_increment
-        primary key,
-    uid      varchar(20) null,
-    platform varchar(20) null,
-    name_id  int         null,
-    constraint id_platform_id_uindex
-        unique (id)
-)
-    auto_increment = 4;
+    `uid`      VARCHAR(40) COMMENT '账号id',
+    `name_id`  bigint COMMENT '成员id',
+    `platform` VARCHAR(40) COMMENT '平台'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='平台及账号';
 
-create index id_platform_score_id_fk
-    on id_platform (name_id);
-
-create table score
+drop table if exists score;
+CREATE TABLE `score`
 (
-    id         int auto_increment
-        primary key,
-    name       varchar(10) null,
-    cf_problem int         null,
-    total      int         null,
-    codeforces varchar(20) null,
-    nowcoder   int         null,
-    constraint score_id_uindex
-        unique (id)
-);
-
+    `id`              bigint COMMENT '成员id',
+    `cf_problem`      int COMMENT '过题数',
+    `cf_rank`         int COMMENT 'cf rating',
+    `nk_problem`      int COMMENT '牛客过题数',
+    `nk_rank`         int COMMENT '牛客rating',
+    `luogu_problem`   int COMMENT '洛谷过题数',
+    `luogu_rank`      int COMMENT '洛谷rating',
+    `atcoder_problem` int COMMENT 'atcoder过题数',
+    `atcoder_rank`    int COMMENT 'atcoder rating',
+    `vjudge_problem`  int COMMENT 'vjudge过题数'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='平台及账号';

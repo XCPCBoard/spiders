@@ -17,7 +17,7 @@ var (
 	}
 )
 
-//scrape 拉取牛客的所有结果
+// scrape 拉取牛客的所有结果
 func scrape(uid string) (res []scraper.KV) {
 	// 请求所有
 	for _, f := range fetchers {
@@ -32,7 +32,7 @@ func scrape(uid string) (res []scraper.KV) {
 	return res
 }
 
-//Flush 刷新某用户牛客id信息
+// Flush 刷新某用户牛客id信息
 func Flush(uid string) {
 	// 拉出所有kv对
 	kvs := scrape(uid)
@@ -53,11 +53,11 @@ func Flush(uid string) {
 		}
 	}
 	for _, j := range kvs {
-		if j.Key == "nowcoder_pass_amount_"+uid {
-			scraper.FlushDB("update  score set nowcoder = ? where id = ?;", j.Val, name_id)
+		if j.Key == "gxuicpc:nowcoder_pass_amount_"+uid {
+			scraper.FlushDB("update  score set nk_problem = ? where id = ?;", j.Val, name_id)
 		}
-		if j.Key == "nowcoder_ranking_"+uid {
-			scraper.FlushDB("update score set now_rank = ? where id = ?;", j.Val, name_id)
+		if j.Key == "gxuicpc:nowcoder_ranking_"+uid {
+			scraper.FlushDB("update score set nk_rank = ? where id = ?;", j.Val, name_id)
 		}
 	}
 

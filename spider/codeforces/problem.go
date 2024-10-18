@@ -10,6 +10,8 @@ import (
 )
 
 var (
+	//接收 函数NewScraper 返回值 &Scraper
+	//函数problemCallback作为传递参数
 	problemScraper = scraper.NewScraper(
 		problemCallback,
 	)
@@ -17,6 +19,7 @@ var (
 )
 
 func problemCallback(c *colly.Collector) {
+	//为html选择器注册回调函数
 	c.OnHTML("div[style=\"position: relative;\"] #pageContent ._UserActivityFrame_frame "+
 		".roundbox.userActivityRoundBox ._UserActivityFrame_footer ._UserActivityFrame_countersRow",
 		func(e *colly.HTMLElement) {
@@ -47,11 +50,13 @@ func problemCallback(c *colly.Collector) {
 	)
 }
 
-//fetchAcceptInfo 获取过题情况
+// fetchAcceptInfo 获取过题情况
 func fetchAcceptInfo(uid string) ([]scraper.KV, error) {
 	// 构造上下文，及传入参数
 	ctx := colly.NewContext()
 	ctx.Put("uid", uid)
+	//hdr := http.Header{"User-Agent": []string{"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0"}}
+	//ctx.Put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0")
 	// 请求
 	err := problemScraper.C.Request("GET", getPersonPageUrl(uid), nil, ctx, nil)
 	if err != nil {

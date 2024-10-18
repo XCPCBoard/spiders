@@ -26,7 +26,7 @@ type submission struct {
 	SMid   string //提交编号
 }
 
-//conCallback 处理比赛列表的回调函数
+// conCallback 处理比赛列表的回调函数
 func conCallback(c *colly.Collector) {
 	d := c.Clone()
 	// 获取用户比赛提交页面信息
@@ -64,6 +64,7 @@ func conCallback(c *colly.Collector) {
 		func(e *colly.HTMLElement) {
 			//获取比赛列表页数
 			np, err := strconv.Atoi(e.DOM.Find("div[class=\"text-center\"] ul li:last-child").First().Text())
+			log.Printf("atcoder max page: %v", np)
 			if err != nil {
 				log.Errorf("Atcoder Page Error %v", err)
 				return
@@ -98,7 +99,7 @@ func conCallback(c *colly.Collector) {
 // 对外暴露函数
 //-------------------------------------------------------------------------------------------//
 
-//fetchConPage 抓取用户提交所有提交信息
+// fetchConPage 抓取用户提交所有提交信息
 func fetchConPage(uid string) ([]scraper.KV, error) {
 	// 构造上下文，及传入参数
 	var res []scraper.KV
@@ -107,6 +108,7 @@ func fetchConPage(uid string) ([]scraper.KV, error) {
 		ctx.Put("uid", uid)
 		// 请求
 		err := conScraper.C.Request("GET", getPageUrl(i), nil, ctx, nil)
+
 		if err != nil {
 			log.Errorf("atcoder contestpage error %v", err)
 			break

@@ -5,23 +5,26 @@ import (
 	"XCPCer_board/dao"
 	_ "XCPCer_board/dao"
 	"XCPCer_board/spider/codeforces"
+	"XCPCer_board/spider/luogu"
 	"XCPCer_board/spider/nowcoder"
+	"XCPCer_board/spider/vjudge"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
+
 	//"XCPCer_board/spider/nowcoder"
 	_ "github.com/FengZhg/go_tools/gin_logrus"
 )
 
 // 主入口函数
 func main() {
-
+	//luogu.Luogu("chenyyy28")
 	c := cron.New()
-	c.AddFunc("@every 24s", func() {
+	c.AddFunc("@every 180s", func() {
 		log.Infoln("okk")
 		ls, err := dao.DBClient.Query("select uid,platform from id_platform;")
 		defer ls.Close()
 		if err != nil {
-			log.Errorf("database error")
+			log.Errorf("database error: %v", err)
 			return
 		}
 		for ls.Next() {
@@ -35,6 +38,10 @@ func main() {
 				codeforces.Flush(id)
 			} else if platform == "nowcoder" {
 				nowcoder.Flush(id)
+			} else if platform == "vjudge" {
+				vjudge.Flush(id)
+			} else if platform == "luogu" {
+				luogu.Luogu(id)
 			}
 
 		}

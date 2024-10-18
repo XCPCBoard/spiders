@@ -10,11 +10,11 @@ var (
 	// 爬取函数
 	fetchers = []func(uid string) ([]scraper.KV, error){
 		fetchMainPage,
-		fetchConPage,
+		//fetchConPage,
 	}
 )
 
-//scrape 拉取atCoder的所有结果
+// scrape 拉取atCoder的所有结果
 func scrape(uid string) (res []scraper.KV) {
 	// 请求所有
 	for _, f := range fetchers {
@@ -32,8 +32,9 @@ func scrape(uid string) (res []scraper.KV) {
 	return res
 }
 
-//Flush 刷新atCoder某用户信息
+// Flush 刷新atCoder某用户信息
 func Flush(uid string) {
+	log.Printf("1221124123413")
 	// 拉出所有kv对
 	kvs := scrape(uid)
 	// 向持久化处理协程注册持久化处理函数

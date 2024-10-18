@@ -17,7 +17,7 @@ var (
 	)
 )
 
-//userInfoCallback 处理codeforces的api
+// userInfoCallback 处理codeforces的api
 func userInfoCallback(c *colly.Collector) {
 	c.OnScraped(func(r *colly.Response) {
 		// 获取uid
@@ -57,8 +57,9 @@ func userInfoCallback(c *colly.Collector) {
 // 对外暴露函数:用户信息获取
 //---------------------------------------------------------------------//
 
-//fetchUserInfo 抓取用户信息
+// fetchUserInfo 抓取用户信息
 func fetchUserInfo(uid string) ([]scraper.KV, error) {
+
 	// 构造上下文，及传入参数
 	ctx := colly.NewContext()
 	ctx.Put("uid", uid)

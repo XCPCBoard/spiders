@@ -3,7 +3,6 @@ package nowcoder
 import (
 	"XCPCer_board/model"
 	"XCPCer_board/scraper"
-	"fmt"
 	"github.com/gocolly/colly"
 	log "github.com/sirupsen/logrus"
 	"strconv"
@@ -22,7 +21,7 @@ var (
 	)
 )
 
-//mainCallback 处理牛客个人主页的回调函数
+// mainCallback 处理牛客个人主页的回调函数
 func mainCallback(c *colly.Collector) {
 	//用goquery
 	c.OnHTML(".nk-container.acm-container .nk-container .nk-main.with-profile-menu.clearfix .my-state-main",
@@ -33,23 +32,25 @@ func mainCallback(c *colly.Collector) {
 				return
 			}
 			// rating
-
-			num, err := strconv.Atoi(e.DOM.Find(fmt.Sprintf(".my-state-item:contains(%v) .state-num.rate-score5",
-				ratingKeyWord)).First().Text())
-
+			num, err := strconv.Atoi(e.DOM.Find(getRatingBaseFindRule(ratingKeyWord)).First().Text())
 			if err != nil {
-				log.Infoln("str atoi Error %v", err)
+				log.Errorf("str atoi Error %v", err)
 			} else {
 				e.Request.Ctx.Put(GetRatingKey(uid), num)
 			}
 			// 排名
-			num, err = strconv.Atoi(e.DOM.Find(getNowCoderContestBaseFindRule(ratingRankingKeyWord)).First().Text())
-			if err != nil {
-				log.Errorf("str atoi Error %v", err)
+			s := e.DOM.Find(getNowCoderContestBaseFindRule(ratingRankingKeyWord)).First().Text()
+			if s == "暂无" {
+				e.Request.Ctx.Put(GetRankingKey(uid), -1)
 			} else {
-				e.Request.Ctx.Put(GetRankingKey(uid), num)
+				num, err = strconv.Atoi(s)
+				if err != nil {
+					log.Errorf("str atoi Error %v", err)
+				} else {
+					e.Request.Ctx.Put(GetRankingKey(uid), num)
+				}
 			}
-			// 过题数
+			// 参加比赛数
 			num, err = strconv.Atoi(e.DOM.Find(getNowCoderContestBaseFindRule(contestAmountKeyWord)).First().Text())
 			if err != nil {
 				log.Errorf("str atoi Error %v", err)
@@ -65,7 +66,7 @@ func mainCallback(c *colly.Collector) {
 // 对外暴露函数
 //-------------------------------------------------------------------------------------------//
 
-//fetchMainPage 抓取个人主页页面所有
+// fetchMainPage 抓取个人主页页面所有
 func fetchMainPage(uid string) ([]scraper.KV, error) {
 	// 构造上下文，及传入参数
 	ctx := colly.NewContext()

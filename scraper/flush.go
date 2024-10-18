@@ -14,7 +14,7 @@ var (
 	flushCh = make(chan interface{})
 )
 
-//KV 处理单元返回的键值对
+// KV 处理单元返回的键值对
 type KV struct {
 	Key string
 	Val interface{}
@@ -33,7 +33,7 @@ type customRequest struct {
 	do func() error
 }
 
-//newFlusher 新持久化处理器
+// newFlusher 新持久化处理器
 func newFlusher() {
 	for i := range flushCh {
 		switch v := i.(type) {
@@ -47,7 +47,7 @@ func newFlusher() {
 	}
 }
 
-//internalFlushRedis 内部刷新redis数据
+// internalFlushRedis 内部刷新redis数据
 func internalFlushRedis(req *redisRequest) {
 	for _, kv := range req.kvs {
 		// 底层库实现了自动重试
@@ -59,7 +59,7 @@ func internalFlushRedis(req *redisRequest) {
 
 }
 
-//internalFlushDB 内部刷新db内数据
+// internalFlushDB 内部刷新db内数据
 func internalFlushDB(req *dbRequest) {
 	_, err := dao.DBClient.Exec(req.query, req.args...)
 	if err != nil {
@@ -67,14 +67,14 @@ func internalFlushDB(req *dbRequest) {
 	}
 }
 
-//FlushRedis 刷新Redis
+// FlushRedis 刷新Redis
 func FlushRedis(kvs []KV) {
 	flushCh <- &redisRequest{
 		kvs: kvs,
 	}
 }
 
-//FlushDB 刷新DB
+// FlushDB 刷新DB
 func FlushDB(query string, args ...interface{}) {
 	flushCh <- &dbRequest{
 		query: query,
@@ -82,7 +82,7 @@ func FlushDB(query string, args ...interface{}) {
 	}
 }
 
-//CustomFlush 自定义刷新
+// CustomFlush 自定义刷新
 func CustomFlush(callback func() error) {
 	flushCh <- &customRequest{
 		do: callback,
