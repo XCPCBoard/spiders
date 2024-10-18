@@ -1,11 +1,13 @@
 package nowcoder
 
 import (
-	"XCPCer_board/model"
-	"XCPCer_board/scraper"
+	"strconv"
+
 	"github.com/gocolly/colly"
 	log "github.com/sirupsen/logrus"
-	"strconv"
+
+	"XCPCBoard/spiders/model"
+	"XCPCBoard/utils/keys"
 )
 
 // @Author: Feng
@@ -15,14 +17,8 @@ import (
 // 基础方法
 //-------------------------------------------------------------------------------------------//
 
-var (
-	practiceScraper = scraper.NewScraper(
-		practiceCallback,
-	)
-)
-
-//practiceCallback 处理牛客个人练习页面的回调函数
-func practiceCallback(c *colly.Collector) {
+//enrichPracticePageCollector 处理牛客个人练习页面的回调函数
+func enrichPracticePageCollector(c *colly.Collector) {
 	//用goquery
 	c.OnHTML(".nk-container.acm-container .nk-container .nk-main.with-profile-menu.clearfix .my-state-main",
 		func(e *colly.HTMLElement) {
@@ -36,7 +32,7 @@ func practiceCallback(c *colly.Collector) {
 			if err != nil {
 				log.Errorf("str atoi Error %v", err)
 			} else {
-				e.Request.Ctx.Put(GetPassAmountKey(uid), num)
+				e.Request.Ctx.Put(keys.NowcoderPassAmountKey(uid), num)
 			}
 		},
 	)
@@ -47,19 +43,14 @@ func practiceCallback(c *colly.Collector) {
 //---------------------------------------------------------------------//
 
 //fetchPractice 抓取个人练习页面的所有
-func fetchPractice(uid string) ([]scraper.KV, error) {
-	// 构造上下文，及传入参数
-	ctx := colly.NewContext()
-	ctx.Put("uid", uid)
+func (n *nowCoder) fetchPractice(ctx *colly.Context) error {
+	// 从上下文拉取uid
+	uid := ctx.Get("uid")
 	// 请求
-	err := practiceScraper.C.Request("GET", getContestPracticeUrl(uid), nil, ctx, nil)
+	err := n.practicePage.Request("GET", getContestPracticeUrl(uid), nil, ctx, nil)
 	if err != nil {
 		log.Errorf("scraper error %v", err)
-		return nil, err
+		return err
 	}
-	// 解构出kv对
-	kvs := scraper.Parse(ctx, map[string]struct{}{
-		"uid": {},
-	})
-	return kvs, nil
+	return nil
 }

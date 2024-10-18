@@ -32,3 +32,15 @@ func ParseToMap(ctx *colly.Context, ignore map[string]struct{}) map[string]inter
 	})
 	return re
 }
+
+//NewBaseCollector 构建基础Colly Collector
+func NewBaseCollector() *colly.Collector {
+	return colly.NewCollector(
+		colly.Async(true),
+		colly.AllowURLRevisit(),
+	)
+}
+
+func ParseUidFromContext(ctx *colly.Context) string {
+	return ctx.Get("uid")
+}

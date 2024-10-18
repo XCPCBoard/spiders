@@ -1,7 +1,7 @@
 package atcoder
 
 import (
-	"XCPCer_board/scraper"
+	"XCPCBoard/spiders/scraper"
 	"fmt"
 	"github.com/gocolly/colly"
 	log "github.com/sirupsen/logrus"

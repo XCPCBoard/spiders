@@ -1,7 +1,7 @@
 package atcoder
 
 import (
-	"XCPCer_board/model"
+	"XCPCBoard/spiders/model"
 	"testing"
 )
 
