@@ -55,6 +55,8 @@ func fetchAcceptInfo(uid string) ([]scraper.KV, error) {
 	// 构造上下文，及传入参数
 	ctx := colly.NewContext()
 	ctx.Put("uid", uid)
+	//hdr := http.Header{"User-Agent": []string{"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0"}}
+	//ctx.Put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0")
 	// 请求
 	err := problemScraper.C.Request("GET", getPersonPageUrl(uid), nil, ctx, nil)
 	if err != nil {

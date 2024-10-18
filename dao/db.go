@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"XCPCBoard/spiders/config"
+	"XCPCer_board/config"
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
