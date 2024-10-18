@@ -18,8 +18,6 @@ var (
 func scrape(uid string) (res []scraper.KV) {
 	// 请求所有
 	for _, f := range fetchers {
-		//time.Sleep(30 * time.Second)
-		//fmt.Printf("fetchers: %T, f: %T\n", fetchers, f)
 		// 请求
 		kvs, err := f(uid)
 		if err != nil {
@@ -36,7 +34,6 @@ func Flush(uid string) {
 	uuid = uid
 	// 拉出所有kv对
 	kvs := scrape(uid)
-	//time.Sleep(1 * time.Minute)
 
 	name_id := 0
 	if kvs == nil {
@@ -69,7 +66,6 @@ func Flush(uid string) {
 	// 向持久化处理协程注册持久化处理函数
 	scraper.CustomFlush(func() error {
 		log.Infoln(kvs)
-		//scraper.FlushRedis(kvs)
 		return nil
 	})
 }

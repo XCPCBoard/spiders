@@ -42,7 +42,6 @@ func profileCallback(c *colly.Collector) {
 func fetchProfile(uid string) ([]scraper.KV, error) {
 	ctx := colly.NewContext()
 	ctx.Put("uid", uid)
-	//err := mainScraper.C.Request("GET", getContestProfileUrl(uid), nil, ctx, nil)
 
 	err := userScraper.C.Request("GET", getProfileUrl(uid), nil, ctx, nil)
 	if err != nil {
@@ -52,6 +51,5 @@ func fetchProfile(uid string) ([]scraper.KV, error) {
 	kvs := scraper.Parse(ctx, map[string]struct{}{
 		"uid": {},
 	})
-	//log.Printf("kvs: %v", kvs)
 	return kvs, nil
 }

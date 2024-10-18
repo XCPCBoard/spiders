@@ -18,15 +18,6 @@ func getLuoguUrl(uid string) string {
 	return fmt.Sprintf("https://www.luogu.com.cn/user/%s", uid)
 }
 
-func getLuoguUserUrl(name string) string {
-	return fmt.Sprintf("https://www.luogu.com.cn/record/list?user=%v&page=1", name)
-}
-
-func getLuoguUserInfoHTMLSelector() string {
-	return ".full-container"
-	//return ".full-container .border.table .row .user"
-}
-
 func getLuoguPassAmountHTMLSelector() string {
 	return ".stats.normal div:nth-child(4) span:last-child"
 }

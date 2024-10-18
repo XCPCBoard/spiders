@@ -30,7 +30,7 @@ func flushDB(uid string, kvs []scraper.KV) {
 	}
 }
 
-func flushRedis(uid string, kvs []scraper.KV) {
+func flushRedis(kvs []scraper.KV) {
 	for _, kv := range kvs {
 		err := dao.RedisClient.Set(context.Background(), kv.Key, kv.Val, 0).Err()
 		if err != nil {
@@ -41,5 +41,5 @@ func flushRedis(uid string, kvs []scraper.KV) {
 
 func Flush(uid string, kvs []scraper.KV) {
 	flushDB(uid, kvs)
-	flushRedis(uid, kvs)
+	flushRedis(kvs)
 }

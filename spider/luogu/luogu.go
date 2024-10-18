@@ -24,12 +24,6 @@ func Luogu(uid string) {
 	Todo
 	希望在提交列表，通过用户名，获取userid，但是该页面需登录，懒了不想写登录
 	*/
-	//uid, err := getUserId(name)
-	//if err != nil {
-	//	log.Error(err)
-	//	return
-	//}
-	//log.Infoln(uid)
 	kvs := scrape(uid)
 
 	if kvs == nil {

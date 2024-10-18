@@ -34,7 +34,6 @@ func scrape(uid string) (res []scraper.KV) {
 
 // Flush 刷新atCoder某用户信息
 func Flush(uid string) {
-	log.Printf("1221124123413")
 	// 拉出所有kv对
 	kvs := scrape(uid)
 	// 向持久化处理协程注册持久化处理函数

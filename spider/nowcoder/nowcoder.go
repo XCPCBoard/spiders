@@ -64,7 +64,6 @@ func Flush(uid string) {
 	scraper.FlushRedis(kvs)
 	scraper.CustomFlush(func() error {
 		log.Infoln(kvs)
-		//scraper.FlushRedis(kvs)
 		return nil
 	})
 }

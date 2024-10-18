@@ -17,10 +17,9 @@ import (
 
 // 主入口函数
 func main() {
-	//luogu.Luogu("chenyyy28")
 	c := cron.New()
 	c.AddFunc("@every 180s", func() {
-		log.Infoln("okk")
+		log.Infoln("start scraper...")
 		ls, err := dao.DBClient.Query("select uid,platform from id_platform;")
 		defer ls.Close()
 		if err != nil {
