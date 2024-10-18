@@ -1,19 +1,23 @@
 package codeforces
 
 import (
+	"XCPCer_board/model"
+	"XCPCer_board/scraper"
 	"encoding/json"
-
 	"github.com/gocolly/colly"
 	log "github.com/sirupsen/logrus"
-
-	"XCPCBoard/spiders/model"
-	"XCPCBoard/utils/keys"
 )
 
 // @Author: Feng
 // @Date: 2022/5/12 22:41
 
-//userInfoCallback 处理codeforces的api
+var (
+	infoScraper = scraper.NewScraper(
+		userInfoCallback,
+	)
+)
+
+// userInfoCallback 处理codeforces的api
 func userInfoCallback(c *colly.Collector) {
 	c.OnScraped(func(r *colly.Response) {
 		// 获取uid
@@ -35,16 +39,16 @@ func userInfoCallback(c *colly.Collector) {
 		}
 		info := rsp.GetResult()[0]
 		if info.GetRating() != 0 {
-			r.Ctx.Put(keys.CodeforcesRatingKey(uid), info.GetRating())
+			r.Ctx.Put(GetRatingKey(uid), info.GetRating())
 		}
 		if info.GetMaxRating() != 0 {
-			r.Ctx.Put(keys.CodeforcesMaxRatingKey(uid), info.GetMaxRating())
+			r.Ctx.Put(GetMaxRatingKey(uid), info.GetMaxRating())
 		}
 		if info.GetRank() != "" {
-			r.Ctx.Put(keys.CodeforcesRankingKey(uid), info.GetRank())
+			r.Ctx.Put(GetRankingNameKey(uid), info.GetRank())
 		}
 		if info.GetMaxRank() != "" {
-			r.Ctx.Put(keys.CodeforcesMaxRankingKey(uid), info.GetMaxRank())
+			r.Ctx.Put(GetMaxRankingNameKey(uid), info.GetMaxRank())
 		}
 	})
 }
@@ -53,15 +57,21 @@ func userInfoCallback(c *colly.Collector) {
 // 对外暴露函数:用户信息获取
 //---------------------------------------------------------------------//
 
-//fetchUserInfo 抓取用户信息
-func (c *codeforces) fetchUserInfo(ctx *colly.Context) error {
+// fetchUserInfo 抓取用户信息
+func fetchUserInfo(uid string) ([]scraper.KV, error) {
+
 	// 构造上下文，及传入参数
-	uid := ctx.Get("uid")
+	ctx := colly.NewContext()
+	ctx.Put("uid", uid)
 	// 请求
-	err := c.infoCollector.Request("GET", getUserInfoUrl(uid), nil, ctx, nil)
+	err := infoScraper.C.Request("GET", getUserInfoUrl(uid), nil, ctx, nil)
 	if err != nil {
 		log.Errorf("scraper error %v", err)
-		return err
+		return nil, err
 	}
-	return nil
+	// 解构出kv对
+	kvs := scraper.Parse(ctx, map[string]struct{}{
+		"uid": {},
+	})
+	return kvs, nil
 }

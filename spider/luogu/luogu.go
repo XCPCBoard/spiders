@@ -1,25 +1,35 @@
 package luogu
 
 import (
-	"XCPCBoard/spiders/scraper"
+	"XCPCer_board/scraper"
+	log "github.com/sirupsen/logrus"
 )
 
-func ScrapeUser(uid string) (map[string]int, error) {
-	// 请求所有并合并所有
-	res, err := scraper.MergeAllResults[string, int](
-		GetUserMsg(uid),
-	)
-	if err != nil {
-		return nil, err
+var (
+	fetchers = []func(uid string) []scraper.KV{
+		GetProblemKvs,
 	}
-	return res, nil
+)
+
+func scrape(uid string) (res []scraper.KV) {
+	for _, f := range fetchers {
+		kvs := f(uid)
+		res = append(res, kvs...)
+	}
+	return res
 }
-func ScrapeSub(uid string) (map[string]ProblemPass, error) {
-	res, err := scraper.MergeAllResults[string, ProblemPass](
-		GetSubMsg(uid),
-	)
-	if err != nil {
-		return nil, err
+
+func Luogu(uid string) {
+	/**
+	Todo
+	希望在提交列表，通过用户名，获取userid，但是该页面需登录，懒了不想写登录
+	*/
+	kvs := scrape(uid)
+
+	if kvs == nil {
+		log.Errorf("kvs is empty")
 	}
-	return res, nil
+
+	Flush(uid, kvs)
+	log.Infoln(kvs)
 }

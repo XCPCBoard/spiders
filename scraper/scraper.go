@@ -7,24 +7,46 @@ import (
 // @Author: Feng
 // @Date: 2022/4/8 17:38
 
-var (
-	factory = Strategy{}
-)
-
-type Strategy struct {
-	scraperMap map[string]Scraper
+// Scraper colly封装
+type Scraper struct {
+	C       *colly.Collector //
+	threads uint32           // 启动的持久化协程数量和processor数量
 }
 
-func GetStrategyInstance() Strategy {
-	return factory
+// 参数丰富接口
+type scraperFunc func(*Scraper)
+
+// WithThreads 带上协程个数
+func WithThreads(threads uint32) scraperFunc {
+	return func(s *Scraper) {
+		s.threads = threads
+	}
 }
 
-func (f Strategy) Register(name string, scraper Scraper) {
-	f.scraperMap[name] = scraper
-}
-
-//Scraper colly封装
-type Scraper interface {
-	Init()
-	Scrape(ctx *colly.Context)
+// NewScraper 构造Scraper
+func NewScraper(cb func(*colly.Collector), opts ...scraperFunc) *Scraper {
+	// 默认参数
+	s := &Scraper{
+		//参数配置：
+		C: colly.NewCollector(
+			colly.Async(false),
+			colly.AllowURLRevisit(),
+			colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"),
+		),
+		threads: 5,
+	}
+	// 应用外来参数
+	for _, f := range opts {
+		if f != nil {
+			f(s)
+		}
+	}
+	// 初始化OnHtml、OnScraped之类的
+	cb(s.C)
+	// 初始化
+	for i := uint32(0); i < s.threads; i++ {
+		// 启动持久化处理协程
+		go newFlusher()
+	}
+	return s
 }

@@ -9,4 +9,5 @@
 -- #                       unKnow_problem_number int(10) DEFAULT NULL,
 -- #                       PRIMARY KEY (uid)
 -- # ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SELECT * FROM lg
+SELECT *
+FROM lg

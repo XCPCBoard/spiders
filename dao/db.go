@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"XCPCBoard/spiders/config"
+	"XCPCer_board/config"
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
@@ -12,12 +12,13 @@ var DBClient *sql.DB
 
 const mysqlDriver = "mysql"
 
-//NewDBClient 初始化db连接
+// NewDBClient 初始化db连接
 func NewDBClient() (*sql.DB, error) {
 	// 判断是否存在配置
 	mysqlConfig := config.Conf.Storages[mysqlDriver]
 	// 初始化连接
-	dbClient, err := sql.Open(mysqlDriver, fmt.Sprintf("%v:%v@tcp(%v)/", mysqlConfig.Username, mysqlConfig.Password, mysqlConfig.Host))
+	dbClient, err := sql.Open(mysqlDriver, fmt.Sprintf("%v:%v@tcp(%v)/%v", mysqlConfig.Username, mysqlConfig.Password, mysqlConfig.Host, mysqlConfig.DB))
+	//log.Infoln("连接成功")
 	if err != nil {
 		log.Errorf("Open Sql Error: %v", err)
 		return nil, err

@@ -1,8 +1,9 @@
 package dao
 
 import (
-	"XCPCBoard/spiders/config"
-	"github.com/go-redis/redis"
+	"XCPCer_board/config"
+	"context"
+	"github.com/go-redis/redis/v8"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -20,7 +21,7 @@ func NewRedisClient() (*redis.Client, error) {
 		Password: redisConfig.Password,
 		DB:       0, // use default DB
 	})
-	_, err := redisClient.Ping().Result()
+	_, err := redisClient.Ping(context.Background()).Result()
 	if err != nil {
 		log.Errorf("Open Redis Error:%v", err)
 		return nil, err
