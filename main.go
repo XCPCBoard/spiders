@@ -21,7 +21,7 @@ func main() {
 	c.AddFunc("@every 180s", func() {
 		log.Infoln("start scraper...")
 		ls, err := dao.DBClient.Query("select uid,platform from id_platform;")
-		defer ls.Close()
+		defer ls.Close()s'd'f
 		if err != nil {
 			log.Errorf("database error: %v", err)
 			return
