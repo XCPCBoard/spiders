@@ -8,20 +8,38 @@ import (
 	"XCPCer_board/spider/luogu"
 	"XCPCer_board/spider/nowcoder"
 	"XCPCer_board/spider/vjudge"
+	"database/sql"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
-
+	"net/http"
+	"strconv"
 	//"XCPCer_board/spider/nowcoder"
 	_ "github.com/FengZhg/go_tools/gin_logrus"
 )
 
 // 主入口函数
 func main() {
+	http.Handle("/metrics", promhttp.Handler())
+	//启动 web 服务
+	go func() {
+		err := http.ListenAndServe("0.0.0.0:"+strconv.Itoa(2116), nil)
+		if err != nil {
+			log.Fatal("启动失败")
+		}
+		log.Info("监控启动，端口为：" + strconv.Itoa(2116))
+	}()
+
 	c := cron.New()
-	c.AddFunc("@every 180s", func() {
+	c.AddFunc("@every 30s", func() {
 		log.Infoln("start scraper...")
 		ls, err := dao.DBClient.Query("select uid,platform from id_platform;")
-		defer ls.Close()s'd'f
+		defer func(ls *sql.Rows) {
+			err := ls.Close()
+			if err != nil {
+
+			}
+		}(ls)
 		if err != nil {
 			log.Errorf("database error: %v", err)
 			return
@@ -46,7 +64,6 @@ func main() {
 		}
 	})
 	c.Start()
-	go c.Start()
 	defer c.Stop()
 
 	select {}
