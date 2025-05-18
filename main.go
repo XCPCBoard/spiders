@@ -51,6 +51,7 @@ func main() {
 				log.Errorln(err)
 				return
 			}
+			log.Infoln(platform)
 			if platform == "codeforces" {
 				codeforces.Flush(id)
 			} else if platform == "nowcoder" {
