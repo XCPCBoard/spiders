@@ -27,6 +27,7 @@ services:
       MYSQL_DATABASE: xcpc_board_mysql
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./create.sql:/docker-entrypoint-initdb.d/create.sql
     ports:
       - "3306:3306"
     restart: unless-stopped

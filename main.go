@@ -31,7 +31,7 @@ func main() {
 	}()
 
 	c := cron.New()
-	c.AddFunc("@every 30s", func() {
+	c.AddFunc("@every 120s", func() {
 		log.Infoln("start scraper...")
 		ls, err := dao.DBClient.Query("select uid,platform from id_platform;")
 		defer func(ls *sql.Rows) {

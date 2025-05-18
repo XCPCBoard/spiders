@@ -32,6 +32,7 @@ type Storage struct {
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
 	DB       string `yaml:"database"`
+	Port     string `yaml:"port"`
 }
 
 type Config struct {
