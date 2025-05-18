@@ -23,9 +23,8 @@ func init() {
 }
 
 var (
-	Conf = Config{}
-	//configPath = "./config/config.yaml"
-	configPath = "./config.yaml" //部署docker后的修改
+	Conf       = Config{}
+	configPath = "./config/config.yaml"
 )
 
 type Storage struct {
